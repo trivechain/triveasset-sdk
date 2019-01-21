@@ -23,10 +23,10 @@
   "dependencies": {
     "async": "^2.1.4",
     "blockexplorer-rpc": "^0.0.4",
-    "cc-transaction-builder": "^0.1.3",
+    "cc-transaction-builder": "file:custom_modules/cc-transaction-builder-0.1.7",
     "coloredcoins-rpc": "^0.1.0",
     "debug": "^2.6.8",
-    "hdwallet": "^0.7.1",
+    "hdwallet": "file:custom_modules/hdwallet-0.7.3",
     "node-rest-client": "2.5.0",
     "node-rsa": "^0.2.24",
     "request": "^2.79.0",
