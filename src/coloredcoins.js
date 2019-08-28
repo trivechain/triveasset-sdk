@@ -11,13 +11,13 @@ var BlockExplorer = require('../lib/block_explorer')
 var FullNode = require('../lib/full_node')
 var MetadataServer = require('../lib/metadata_server')
 
-var mainnetColoredCoinsHost = 'https://api.coloredcoins.org/v3'
-var testnetColoredCoinsHost = 'https://testnet.api.coloredcoins.org/v3'
+var mainnetColoredCoinsHost = 'https://asset.trivechain.com/api/v3'
+var testnetColoredCoinsHost = 'https://asset.trivechain.com/api/v3'
 
-var mainnetBlockExplorerHost = 'https://explorer.coloredcoins.org'
-var testnetBlockExplorerHost = 'https://testnet.explorer.coloredcoins.org'
+var mainnetBlockExplorerHost = 'https://asset.trivechain.com/explorer-api/'
+var testnetBlockExplorerHost = 'https://asset.trivechain.com/explorer-api/'
 
-var metadataServerHost = 'https://prod-metadata.coloredcoins.org'
+var metadataServerHost = 'https://asset.trivechain.com/metadata'
 
 var verifierPath = 'https://www.coloredcoins.org/explorer/verify/api.php'
 
