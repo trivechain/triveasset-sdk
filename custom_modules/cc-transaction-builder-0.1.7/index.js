@@ -192,7 +192,7 @@ ColoredCoinsBuilder.prototype._encodeAssetId = function (reissueable, txid, nvou
 ColoredCoinsBuilder.prototype._encodeColorScheme = function (args) {
   var self = this
   var addMultisig = false
-  var encoder = cc.newTransaction(0x4343, CC_TX_VERSION)
+  var encoder = cc.newTransaction(0x5441, CC_TX_VERSION)
   var reedemScripts = []
   var coloredOutputIndexes = []
   var txb = args.txb
@@ -533,7 +533,7 @@ ColoredCoinsBuilder.prototype._addInputsForSendTransaction = function (txb, args
     }
   }
   debug('reached encoder')
-  var encoder = cc.newTransaction(0x4343, CC_TX_VERSION)
+  var encoder = cc.newTransaction(0x5441, CC_TX_VERSION)
   if (!self._tryAddingInputsForFee(txb, args.utxos, totalInputs, args, satoshiCost)) {
     throw new errors.NotEnoughFundsError({
       type: 'issuance',

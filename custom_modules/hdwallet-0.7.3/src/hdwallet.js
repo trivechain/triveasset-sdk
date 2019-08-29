@@ -18,7 +18,7 @@ var DataStorage = require('data-storage')
 var MAX_EMPTY_ACCOUNTS = 3
 var MAX_EMPTY_ADDRESSES = 3
 
-var mainnetBlockExplorerHost = 'https://explorer.coloredcoins.org'
+var mainnetBlockExplorerHost = 'https://asset.trivechain.com/explorer/'
 var testnetBlockExplorerHost = 'https://testnet.explorer.coloredcoins.org'
 
 var HDWallet = function (settings) {
@@ -67,6 +67,7 @@ var HDWallet = function (settings) {
     self.needToScan = false
   } else {
     if (self.mnemonic) {
+      console.log(self.mnemonic);
       if (!bip39.validateMnemonic(self.mnemonic)) {
         throw new Error('Bad mnemonic.')
       }
@@ -400,9 +401,12 @@ HDWallet.prototype.discover = function (callback) {
           function (cb) {
             fringeAddresses = self.getFringeAddresses(fringe)
             var addresses = Object.keys(fringeAddresses)
+            console.log("fringeAddresses", fringeAddresses);
+            console.log("addresses", addresses);
             if (self.needToScan && !self.offline) {
               self.isAddressActive(addresses, cb)
             } else {
+              console.log("isAddressNotActive");
               cb(null, addresses.map(function (address) {
                 return {
                   address: address,
@@ -412,6 +416,8 @@ HDWallet.prototype.discover = function (callback) {
             }
           },
           function (discoveredAddresses, cb) {
+            console.log("discoveredAddresses", discoveredAddresses);
+            console.log("cb", cb)
             allScaned = self.calcNextFringe(fringe, fringeAddresses, discoveredAddresses)
             if (allScaned) {
               self.saveFrienge(fringe)
@@ -492,6 +498,9 @@ HDWallet.prototype.getFringeAddresses = function (fringe) {
 
 HDWallet.prototype.calcNextFringe = function (fringe, fringeAddresses, discoveredAddresses) {
   var self = this
+  console.log("fringe", fringe);
+  console.log("fringeAddresses", fringeAddresses);
+  console.log("discoveredAddresses", discoveredAddresses);
   discoveredAddresses.forEach(function (discoveredAddress) {
     var fringeAddress = fringeAddresses[discoveredAddress.address]
     if (!fringeAddress) return
@@ -586,6 +595,7 @@ HDWallet.prototype.isAddressActive = function (addresses, callback) {
     self.blockexplorer.post('isactive', {addresses: chunk},
       function (err, res) {
         if (err) return cb(err)
+        console.log("isAddressActiveRes", res);
         return callback(null, res)
       }
     )
