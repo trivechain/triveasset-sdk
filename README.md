@@ -20,7 +20,7 @@ $ npm i trivetoken-sdk
 var ColoredCoins = require('coloredcoins-sdk')
 var cc = new ColoredCoins()
 cc.init(function (err) {
-  // Colored-Coins SDK is now ready
+  // trievtoken SDK is now ready
 })
 ```
 
