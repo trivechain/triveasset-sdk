@@ -1,4 +1,4 @@
-# Colored-Coins SDK
+# trivetoken-sdk
 [![Build Status](https://travis-ci.org/Colored-Coins/colored-coins-sdk.svg?branch=master)](https://travis-ci.org/Colored-Coins/colored-coins-sdk)
 [![Coverage Status](https://coveralls.io/repos/github/Colored-Coins/colored-coins-sdk/badge.svg?branch=master)](https://coveralls.io/github/Colored-Coins/colored-coins-sdk?branch=master)
 [![npm version](https://badge.fury.io/js/coloredcoins-sdk.svg)](http://badge.fury.io/js/coloredcoins-sdk)
@@ -12,7 +12,7 @@ Coupled with state-of-the-art [BIP32](https://github.com/bitcoin/bips/blob/maste
 ## Installation
 
 ```sh
-$ npm i coloredcoins-sdk
+$ npm i trivetoken-sdk
 ```
 ## Usage
 
@@ -32,7 +32,7 @@ Note: without some configuration, some tests (all those which actually need fund
 In order for all the tests to pass, you'll need to have some funds, i.e. Bitcoins (or testnet-coins when `network` is `'testnet'`). <br>
 Do this by creating a JSON file, which includes `privateSeed` \ `mnemonic` where which the address in the [BIP44](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki) path m/44'/0'/0'/0/0 for mainnet (m/44'/1'/0'/0/0 for tetsnet) has enough Bitcoins (or testnet-coins):
 ```shell
-$ cd /path/to/coloredcoins-sdk
+$ cd /path/to/trivetoken-sdk
 $ echo '{"network":"testnet", "privateSeed":"YourPrivateSeed"}' >> test/settings.json
 $ mocha
 ```
