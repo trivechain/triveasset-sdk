@@ -5,7 +5,7 @@ var encodeAssetId = require('triveasset-assetid-encoder')
 var cc = require('triveasset-transaction')
 var findBestMatchByNeededAssets = require('./modules/findBestMatchByNeededAssets')
 var Buffer = require('safe-buffer').Buffer
-var debug = require('debug')('triveasset-transaction-builder')
+var debug = require('debug')('../triveasset-transaction-builder-0.1.7')
 var errors = require('cc-errors')
 var bufferReverse = require('buffer-reverse')
 
