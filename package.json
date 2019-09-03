@@ -23,10 +23,10 @@
   "dependencies": {
     "async": "^2.1.4",
     "blockexplorer-rpc": "^0.0.4",
-    "triveasset-transaction-builder": "./custom_modules/triveasset-transaction-builder-0.1.7",
+    "triveasset-transaction-builder": "file:./custom_modules/triveasset-transaction-builder-0.1.7",
     "coloredcoins-rpc": "^0.1.0",
     "debug": "^2.6.8",
-    "hdwallet": "./custom_modules/hdwallet-0.7.3",
+    "hdwallet": "file:./custom_modules/hdwallet-0.7.3",
     "node-rest-client": "2.5.0",
     "node-rsa": "^0.2.24",
     "request": "^2.79.0",
