@@ -14,7 +14,7 @@
     "buffer-reverse": "^1.0.1",
     "triveasset-assetid-encoder": "../triveasset-assetid-encoder-0.6.2",
     "cc-errors": "0.1.0",
-    "triveasset-transaction": "^1.2.1",
+    "cc-transaction": "^1.2.1",
     "debug": "^2.6.4",
     "lodash": "^4.17.4",
     "safe-buffer": "^5.0.1"
