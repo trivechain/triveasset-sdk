@@ -19,14 +19,14 @@ Generating your mnemonic for the first time
 Go ahead and type the following into your index.js file:
 
 ```javascript
-var ColoredCoins = require('./trivetoken-sdk')
+var TriveAsset = require('./trivetoken-sdk')
 
 var settings = {
   network: 'testnet',
   mnemonic: null
 }
 
-var cc = new ColoredCoins(settings)
+var cc = new TriveAsset(settings)
 
 cc.on('connect', function() {
   console.log("mnemonic: ", cc.hdwallet.getMnemonic())
@@ -38,7 +38,7 @@ We create a settings object, specifying the **testnet** network, and no mnemonic
 
 You can run this code with -> **node index.js**.
 
-In a real app, you would now store that mnemonic in a safe place, and use that same mnemonic the next time you initialize the ColoredCoins SDK. For the purpose of this guide, just copy the mnemonic into the settings object, like so (but do it with your own mnemonic!):
+In a real app, you would now store that mnemonic in a safe place, and use that same mnemonic the next time you initialize the TriveAsset SDK. For the purpose of this guide, just copy the mnemonic into the settings object, like so (but do it with your own mnemonic!):
 ```
 var settings = {
   network: 'mainnet',
@@ -97,7 +97,7 @@ Body:  { txHex: '01000085e54a5000a76f0c2c09d645a57dd4cad0000165e150aefa77cb799a1
 The important part is the assetId. This is the ID of your newly-issued asset and this is what you will use to identify it in your app. You can launch the trivechain Block Explorer and enter the Asset ID you got in the response, and look at its details, like how many were created, its name, and so on. Congrats!
 
 ### Sending asset units
-Sending some trive Liras is easy with the ColoredCoins SDK. First, make sure you issued an asset in the last section, and take note of the returned Asset ID. Then, you can use the following code:
+Sending some trive Liras is easy with the TriveAsset SDK. First, make sure you issued an asset in the last section, and take note of the returned Asset ID. Then, you can use the following code:
 
 ```
 cc.on('connect', function() {

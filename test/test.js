@@ -1,10 +1,10 @@
 /* eslint-env mocha */
-var ColoredCoins = require('..')
+var TriveAsset = require('../src/triveassets')
 var assert = require('assert')
 var jf = require('jsonfile')
 var path = require('path')
 
-describe('Test ColoredCoins SDK', function () {
+describe('Test TriveAsset SDK', function () {
   var cc
 
   var fromAddress = 'mxNTyQ3WdFMQE7SGVpSQGXnSDevGMLq7dg'
@@ -35,7 +35,7 @@ describe('Test ColoredCoins SDK', function () {
       }
     }
     // read from command line arguments
-    cc = new ColoredCoins(settings)
+    cc = new TriveAsset(settings)
     cc.init(done)
   })
 

@@ -1,8 +1,8 @@
 # trivetoken-sdk
 [![Build Status](https://travis-ci.org/Colored-Coins/colored-coins-sdk.svg?branch=master)](https://travis-ci.org/Colored-Coins/colored-coins-sdk)
 [![Coverage Status](https://coveralls.io/repos/github/Colored-Coins/colored-coins-sdk/badge.svg?branch=master)](https://coveralls.io/github/Colored-Coins/colored-coins-sdk?branch=master)
-[![npm version](https://badge.fury.io/js/coloredcoins-sdk.svg)](http://badge.fury.io/js/coloredcoins-sdk)
-[![Slack channel](http://slack.coloredcoins.org/badge.svg)](http://slack.coloredcoins.org)
+[![npm version](https://badge.fury.io/js/triveassets-sdk.svg)](http://badge.fury.io/js/triveassets-sdk)
+[![Slack channel](http://slack.triveassets.org/badge.svg)](http://slack.triveassets.org)
 
 [![Standard - JavaScript Style Guide](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
 
@@ -17,8 +17,8 @@ $ npm i trivetoken-sdk
 ## Usage
 
 ```js
-var ColoredCoins = require('coloredcoins-sdk')
-var cc = new ColoredCoins()
+var TriveAsset = require('triveassets-sdk')
+var cc = new TriveAsset()
 cc.init(function (err) {
   // trievtoken SDK is now ready
 })

@@ -1,13 +1,13 @@
 {
-  "name": "coloredcoins-sdk",
+  "name": "triveassets-sdk",
   "version": "0.3.2",
   "description": "Colored-Coins SDK for issuing and transferring digital assets using blockchain technology",
-  "main": "src/coloredcoins.js",
+  "main": "src/triveassets.js",
   "scripts": {
     "test": "mocha",
-    "browserify": "browserify --ignore-missing -it=mkpath --standalone ColoredCoins --entry src/coloredcoins.js --outfile client/coloredcoins.client.js",
-    "babel": "babel client/coloredcoins.client.js -o client/coloredcoins.client.js",
-    "uglify": "uglifyjs client/coloredcoins.client.js -o client/coloredcoins.client.min.js",
+    "browserify": "browserify --ignore-missing -it=mkpath --standalone TriveAsset --entry src/triveassets.js --outfile client/triveassets.client.js",
+    "babel": "babel client/triveassets.client.js -o client/triveassets.client.js",
+    "uglify": "uglifyjs client/triveassets.client.js -o client/triveassets.client.min.js",
     "coverage": "istanbul cover _mocha -- -R spec",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "client_commit": "git commit --quiet ./client -m \"browserify and uglify\" || echo \"No changes to commit\"",
@@ -23,7 +23,7 @@
   "dependencies": {
     "async": "^2.1.4",
     "blockexplorer-rpc": "^0.0.4",
-    "cc-transaction-builder": "file:custom_modules/cc-transaction-builder-0.1.7",
+    "triveasset-transaction-builder": "file:custom_modules/triveasset-transaction-builder-0.1.7",
     "coloredcoins-rpc": "^0.1.0",
     "debug": "^2.6.8",
     "hdwallet": "file:custom_modules/hdwallet-0.7.3",
@@ -41,6 +41,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Colored-Coins/colored-coins-sdk.git"
+    "url": "https://github.com/trivechain/triveassets-sdk.git"
   }
 }
