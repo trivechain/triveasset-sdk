@@ -24,8 +24,8 @@ var TriveAssetBuilder = function (properties) {
   }
   this.defaultFeePerKb = parseInt(properties.defaultFeePerKb) || 25000
 
-  this.mindustvalue = parseInt(properties.mindustvalue) || 600
-  this.mindustvaluemultisig = parseInt(properties.mindustvaluemultisig) || 700
+  this.mindustvalue = parseInt(properties.mindustvalue) || 201
+  this.mindustvaluemultisig = parseInt(properties.mindustvaluemultisig) || 2001
   this.writemultisig = properties.writemultisig || true
 }
 
