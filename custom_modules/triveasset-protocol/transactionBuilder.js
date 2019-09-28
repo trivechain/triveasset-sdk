@@ -1,15 +1,15 @@
 var bitcoinjs = require('bitcoinjs-lib')
 var BigNumber = require('bignumber.js')
 var _ = require('lodash')
-var encodeAssetId = require('triveasset-assetid-encoder')
-var cc = require('cc-transaction')
-var findBestMatchByNeededAssets = require('./modules/findBestMatchByNeededAssets')
+var encodeAssetId = require('./assetIdEncoder')
+var cc = require('./transaction')
+var findBestMatchByNeededAssets = require('./findBestMatchByNeededAssets')
 var Buffer = require('safe-buffer').Buffer
-var debug = require('debug')('../triveasset-transaction-builder-0.1.7')
-var errors = require('cc-errors')
+var debug = require('debug')('transactionBuilder')
+var errors = require('triveasset-errors')
 var bufferReverse = require('buffer-reverse')
 
-var CC_TX_VERSION = 0x02
+var TA_TX_VERSION = 0x03
 
 var TriveAssetBuilder = function (properties) {
   properties = properties || {}
@@ -192,7 +192,7 @@ TriveAssetBuilder.prototype._encodeAssetId = function (reissueable, txid, nvout,
 TriveAssetBuilder.prototype._encodeColorScheme = function (args) {
   var self = this
   var addMultisig = false
-  var encoder = cc.newTransaction(0x5441, CC_TX_VERSION)
+  var encoder = cc.newTransaction(0x5441, TA_TX_VERSION)
   var reedemScripts = []
   var coloredOutputIndexes = []
   var txb = args.txb
@@ -213,8 +213,8 @@ TriveAssetBuilder.prototype._encodeColorScheme = function (args) {
   encoder.setLockStatus(lockStatus)
   encoder.setAmount(args.amount, args.divisibility)
   encoder.setAggregationPolicy(args.aggregationPolicy)
-  if (args.torrentHash) {
-    encoder.setHash(args.torrentHash, args.sha2)
+  if (args.ipfsHash) {
+    encoder.setHash(args.ipfsHash)
   }
 
   if (args.transfer) {
@@ -533,7 +533,7 @@ TriveAssetBuilder.prototype._addInputsForSendTransaction = function (txb, args) 
     }
   }
   debug('reached encoder')
-  var encoder = cc.newTransaction(0x5441, CC_TX_VERSION)
+  var encoder = cc.newTransaction(0x5441, TA_TX_VERSION)
   if (!self._tryAddingInputsForFee(txb, args.utxos, totalInputs, args, satoshiCost)) {
     throw new errors.NotEnoughFundsError({
       type: 'issuance',
@@ -598,8 +598,8 @@ TriveAssetBuilder.prototype._addInputsForSendTransaction = function (txb, args) 
   }
   debug('before using encoder')
     // add metadata if we have any
-  if (args.torrentHash && args.sha2 && self.writemultisig) {
-    encoder.setHash(args.torrentHash, args.sha2)
+  if (args.ipfsHash && self.writemultisig) {
+    encoder.setHash(args.ipfsHash)
   }
   var buffer = encoder.encode()
   if (buffer.leftover && buffer.leftover.length > 0) {
@@ -660,7 +660,7 @@ TriveAssetBuilder.prototype._addInputsForSendTransaction = function (txb, args) 
   }
   txb.addOutput(Array.isArray(args.from) ? args.from[0] : args.from, lastOutputValue)
   debug('success')
-  return { txHex: txb.tx.toHex(), metadataSha1: args.torrentHash, multisigOutputs: reedemScripts, coloredOutputIndexes: _.uniqBy(coloredOutputIndexes) }
+  return { txHex: txb.tx.toHex(), metadata: args.ipfsHash, multisigOutputs: reedemScripts, coloredOutputIndexes: _.uniqBy(coloredOutputIndexes) }
 }
 
 TriveAssetBuilder.prototype.buildBurnTransaction = function (args) {

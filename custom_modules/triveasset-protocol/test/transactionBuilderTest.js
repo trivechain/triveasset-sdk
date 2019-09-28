@@ -1,12 +1,12 @@
 /* eslint-env mocha */
-var TriveAssetBuilder = require('..')
+var TriveAssetBuilder = require('../transactionBuilder')
 var ccb = new TriveAssetBuilder({network: 'testnet'})
 var assert = require('assert')
 var clone = require('clone')
 var bitcoinjs = require('bitcoinjs-lib')
 var Transaction = bitcoinjs.Transaction
 var script = bitcoinjs.script
-var CC = require('triveasset-transaction')
+var CC = require('../transaction')
 var _ = require('lodash')
 
 var issueArgs = {

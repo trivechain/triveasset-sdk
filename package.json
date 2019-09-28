@@ -23,7 +23,7 @@
   "dependencies": {
     "async": "^2.1.4",
     "blockexplorer-rpc": "^0.0.4",
-    "triveasset-transaction-builder": "file:./custom_modules/triveasset-transaction-builder-0.1.7",
+    "triveasset-protocol": "file:./custom_modules/triveasset-protocol",
     "coloredcoins-rpc": "^0.1.0",
     "debug": "^2.6.8",
     "hdwallet": "file:./custom_modules/hdwallet-0.7.3",

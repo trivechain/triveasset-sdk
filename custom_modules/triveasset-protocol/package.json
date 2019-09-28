@@ -1,0 +1,33 @@
+{
+  "name": "triveasset-protocol",
+  "version": "1.1.2",
+  "description": "The encoding/decoding functions for the triveasset scheme transfer set of OP_CODES",
+  "main": "index.js",
+  "dependencies": {
+    "bitcoinjs-lib": "file:./../bitcoinjs-lib-2.2.0",
+    "bs58check": "1.0.8",
+    "crypto-hashing": "0.3.1",
+    "debug": "2.2.0",
+    "sffc-encoder": "^0.1.12",
+    "triveasset-errors": "file:./../triveasset-errors"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha",
+    "coverage": "istanbul cover _mocha -- -R spec",
+    "coveralls": "cat ./coverage/lcov.info | coveralls"
+  },
+  "author": "thehobbit85",
+  "license": "Apache-2.0",
+  "keywords": [
+    "colored coins",
+    "bitcoin",
+    "blockchain"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Colored-Coins/Transfer-Encoder.git"
+  }
+}
