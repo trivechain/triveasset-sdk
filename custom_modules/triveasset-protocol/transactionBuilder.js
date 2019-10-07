@@ -24,8 +24,8 @@ var TriveAssetBuilder = function (properties) {
   }
   this.defaultFeePerKb = parseInt(properties.defaultFeePerKb) || 25000
 
-  this.mindustvalue = parseInt(properties.mindustvalue) || 201
-  this.mindustvaluemultisig = parseInt(properties.mindustvaluemultisig) || 2001
+  this.mindustvalue = parseInt(properties.mindustvalue) || 5441
+  this.mindustvaluemultisig = parseInt(properties.mindustvaluemultisig) || 5441
   this.writemultisig = properties.writemultisig || true
 }
 
@@ -264,8 +264,6 @@ TriveAssetBuilder.prototype._encodeColorScheme = function (args) {
   if (addMultisig) {
     if (buffer.leftover && buffer.leftover.length === 1) {
       self._addHashesOutput(txb.tx, args.pubKeyReturnMultisigDust, buffer.leftover[0])
-    } else if (buffer.leftover && buffer.leftover.length === 2) {
-      self._addHashesOutput(txb.tx, args.pubKeyReturnMultisigDust, buffer.leftover[1], buffer.leftover[0])
     } else {
       throw new Error('enough room for hashes: we offsetted inputs for nothing')
     }
@@ -323,18 +321,13 @@ TriveAssetBuilder.prototype._generateMultisigAddress = function (pubKeys, m) {
   return { address: sendto, reedemScript: script.toHex() }
 }
 
-TriveAssetBuilder.prototype._addHashesOutput = function (tx, address, sha2, sha1) {
+TriveAssetBuilder.prototype._addHashesOutput = function (tx, address, ipfsHash) {
   var self = this
   var chunks = []
-  chunks.push(bitcoinjs.opcodes.OP_1)
+  chunks.push(bitcoinjs.opcodes.OP_7)
   chunks.push(address ? new Buffer(address, 'hex') : new Buffer('03ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff', 'hex'))
-  chunks.push(Buffer.concat([new Buffer('03', 'hex'), sha2], 33))
-  if (sha1) {
-    chunks.push(Buffer.concat([new Buffer('030000000000000000000000', 'hex'), sha1], 33))
-    chunks.push(bitcoinjs.opcodes.OP_3)
-  } else {
-    chunks.push(bitcoinjs.opcodes.OP_2)
-  }
+  chunks.push(Buffer.concat([new Buffer('03', 'hex'), ipfsHash], 40))
+  chunks.push(bitcoinjs.opcodes.OP_8)
   chunks.push(bitcoinjs.opcodes.OP_CHECKMULTISIG)
 
   debug('chunks', chunks)
@@ -608,8 +601,6 @@ TriveAssetBuilder.prototype._addInputsForSendTransaction = function (txb, args) 
     buffer = encoder.encode()
     if (buffer.leftover.length === 1) {
       self._addHashesOutput(txb.tx, args.pubKeyReturnMultisigDust, buffer.leftover[0])
-    } else if (buffer.leftover.length === 2) {
-      self._addHashesOutput(txb.tx, args.pubKeyReturnMultisigDust, buffer.leftover[1], buffer.leftover[0])
     } else {
       throw new errors.CCTransactionConstructionError()
     }

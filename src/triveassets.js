@@ -135,13 +135,11 @@ TriveAsset.prototype.buildTransaction = function (type, ccArgs, callback) {
 TriveAsset.prototype.signAndTransmit = function (assetInfo, callback) {
   var self = this
   async.waterfall([
-    function(cb) {
-      self.metadataServer.seed(assetInfo.sha1, cb)
-    },
-    function (data, cb) {
+    function (cb) {
       self.sign(assetInfo.txHex, cb)
     },
     function (signedTxHex, cb) {
+      console.log(signedTxHex);
       assetInfo.txHex = signedTxHex
       self.transmit(signedTxHex, cb)
     }

@@ -22,15 +22,17 @@
   "license": "Apache-2.0",
   "dependencies": {
     "async": "^2.1.4",
+    "bignumber.js": "^4.0.0",
     "blockexplorer-rpc": "^0.0.4",
-    "triveasset-protocol": "file:./custom_modules/triveasset-protocol",
+    "clone": "^2.1.2",
     "coloredcoins-rpc": "^0.1.0",
     "debug": "^2.6.8",
     "hdwallet": "file:./custom_modules/hdwallet-0.7.3",
     "node-rest-client": "2.5.0",
     "node-rsa": "^0.2.24",
     "request": "^2.79.0",
-    "socket.io-client": "^2.0.1"
+    "socket.io-client": "^2.0.1",
+    "triveasset-protocol": "file:./custom_modules/triveasset-protocol"
   },
   "devDependencies": {
     "babel-cli": "^6.22.2",
