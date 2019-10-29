@@ -144,8 +144,8 @@ var networks = {
       public: 0x043587cf,
       private: 0x04358394
     },
-    pubKeyHash: 0x8c,
-    scriptHash: 0x13,
+    pubKeyHash: 0x7f,
+    scriptHash: 0x7d,
     wif: 0xef,
     dustThreshold: 546,
     feePerKb: 10000,
