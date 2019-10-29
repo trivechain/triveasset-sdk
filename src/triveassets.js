@@ -11,11 +11,11 @@ var BlockExplorer = require('../lib/block_explorer')
 var FullNode = require('../lib/full_node')
 var MetadataServer = require('../lib/metadata_server')
 
-var mainnetTriveAssetHost = 'https://asset.trivechain.com/api/v3'
-var testnetTriveAssetHost = 'https://asset.trivechain.com/api/v3'
+var mainnetTriveAssetHost = 'https://explorer.trivechain.com/api'
+var testnetTriveAssetHost = 'https://explorer.trvc.dev'
 
-var mainnetBlockExplorerHost = 'https://asset.trivechain.com/explorer-api/'
-var testnetBlockExplorerHost = 'https://asset.trivechain.com/explorer-api/'
+var mainnetBlockExplorerHost = 'https://explorer.trivechain.com/api'
+var testnetBlockExplorerHost = 'https://explorer.trvc.dev'
 
 var metadataServerHost = 'https://asset.trivechain.com/metadata'
 
@@ -46,6 +46,7 @@ var TriveAsset = function (settings) {
   self.redisPort = settings.redisPort || 6379
   self.redisHost = settings.redisHost || '127.0.0.1'
   self.redisUrl = settings.redisUrl
+  console.log(settings);
   self.hdwallet = new HDWallet(settings)
   self.network = self.hdwallet.network
   self.eventsSecure = settings.eventsSecure || false
