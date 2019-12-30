@@ -61,7 +61,8 @@ ta.init(function (err) {
     },
     lockStatus: true,
     fee: 1000,
-    issueAddress: address
+    issueAddress: address,
+    financeChangeAddress: address,
   }
 
   ta.issueAsset(tatIssuanceParams, function (err, body) {
