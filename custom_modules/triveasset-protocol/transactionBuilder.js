@@ -324,10 +324,10 @@ TriveAssetBuilder.prototype._generateMultisigAddress = function (pubKeys, m) {
 TriveAssetBuilder.prototype._addHashesOutput = function (tx, address, ipfsHash) {
   var self = this
   var chunks = []
-  chunks.push(bitcoinjs.opcodes.OP_7)
-  chunks.push(address ? new Buffer(address, 'hex') : new Buffer('03ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff', 'hex'))
+  chunks.push(bitcoinjs.opcodes.OP_1)
+  chunks.push(new Buffer('02af5efd764ba9ce79dfdd24b056624ec9000f2d0dcd87244236f566954b30c080', 'hex'));
   chunks.push(Buffer.concat([new Buffer('03', 'hex'), ipfsHash], 40))
-  chunks.push(bitcoinjs.opcodes.OP_8)
+  chunks.push(bitcoinjs.opcodes.OP_2)
   chunks.push(bitcoinjs.opcodes.OP_CHECKMULTISIG)
 
   debug('chunks', chunks)
@@ -336,7 +336,7 @@ TriveAssetBuilder.prototype._addHashesOutput = function (tx, address, ipfsHash) 
 
   // try compute value to pass mindust
   // TODO: actually comput it with the fee from the api request, this assumes static fee per kb
-  tx.outs.unshift({ script: script, value: self._getNoneMinDustByScript(script) })
+  tx.outs.unshift({ script: script, value: 5442 })
 }
 
 TriveAssetBuilder.prototype._getNoneMinDustByScript = function (script) {
