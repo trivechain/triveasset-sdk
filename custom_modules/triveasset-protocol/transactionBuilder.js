@@ -464,6 +464,7 @@ TriveAssetBuilder.prototype._getChangeAmount = function (tx, fee, totalInputValu
 
 TriveAssetBuilder.prototype._addInputsForSendTransaction = function (txb, args) {
   var self = this
+  args.fee = 300000
   var satoshiCost = self._computeCost(true, args)
   var totalInputs = { amount: 0 }
   var reedemScripts = []
