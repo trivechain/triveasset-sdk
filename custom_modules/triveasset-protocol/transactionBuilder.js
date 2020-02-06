@@ -420,9 +420,6 @@ TriveAssetBuilder.prototype.buildSendTransaction = function (args) {
   if (!args.to) {
     throw new Error('Must have "to"')
   }
-  if (!args.fee && !self.defaultFee) {
-    throw new Error('Must have "fee"')
-  }
 
   if (args.fee) {
     args.fee = parseInt(args.fee)
@@ -644,6 +641,7 @@ TriveAssetBuilder.prototype._addInputsForSendTransaction = function (txb, args) 
     lastOutputValue = self._getChangeAmount(txb.tx, args.fee, totalInputs)
   }
 
+  debug('numOfChanges', numOfChanges);
   if (numOfChanges === 2) {
     txb.addOutput(changeAddress, lastOutputValue - self.mindustvalue)
     lastOutputValue = self.mindustvalue
@@ -651,7 +649,7 @@ TriveAssetBuilder.prototype._addInputsForSendTransaction = function (txb, args) 
   if (coloredChange) {
     coloredOutputIndexes.push(txb.tx.outs.length)
   }
-  txb.addOutput(Array.isArray(args.from) ? args.from[0] : args.from, lastOutputValue)
+  txb.addOutput(coloredChange ? args.coloredChangeAddress : (Array.isArray(args.from) ? args.from[0] : args.from), lastOutputValue)
   debug('success')
   return { txHex: txb.tx.toHex(), metadata: args.ipfsHash, multisigOutputs: reedemScripts, coloredOutputIndexes: _.uniqBy(coloredOutputIndexes) }
 }
