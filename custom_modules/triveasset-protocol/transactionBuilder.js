@@ -325,7 +325,7 @@ TriveAssetBuilder.prototype._addHashesOutput = function (tx, address, ipfsHash) 
   var self = this
   var chunks = []
   chunks.push(bitcoinjs.opcodes.OP_1)
-  chunks.push(new Buffer('0317331a4e7ca70370b8f2c17348c9b32efdc5bb59e658e07eb7380e58e7bf8cae', 'hex'));
+  chunks.push(new Buffer('02af5efd764ba9ce79dfdd24b056624ec9000f2d0dcd87244236f566954b30c080', 'hex'));
   chunks.push(Buffer.concat([new Buffer('03', 'hex'), ipfsHash], 40))
   chunks.push(bitcoinjs.opcodes.OP_2)
   chunks.push(bitcoinjs.opcodes.OP_CHECKMULTISIG)
