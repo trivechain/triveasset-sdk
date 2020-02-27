@@ -650,7 +650,7 @@ TriveAssetBuilder.prototype._addInputsForSendTransaction = function (txb, args) 
   if (coloredChange) {
     coloredOutputIndexes.push(txb.tx.outs.length)
   }
-  txb.addOutput(coloredChange ? args.coloredChangeAddress : (Array.isArray(args.from) ? args.from[0] : args.from), lastOutputValue)
+  txb.addOutput(coloredChange ? (args.coloredChangeAddress ? args.coloredChangeAddress : (Array.isArray(args.from) ? args.from[0] : args.from) ) : (Array.isArray(args.from) ? args.from[0] : args.from), lastOutputValue)
   debug('success')
   return { txHex: txb.tx.toHex(), metadata: args.ipfsHash, multisigOutputs: reedemScripts, coloredOutputIndexes: _.uniqBy(coloredOutputIndexes) }
 }
