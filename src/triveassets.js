@@ -213,10 +213,7 @@ TriveAsset.prototype.issueAsset = function (args, callback) {
 TriveAsset.prototype.buildSendAssetTX = function (args, callback) {
   var self = this
   var transmit = args.transmit !== false
-  console.log(args.privateKey)
-  if (!args.privateKey) {
-    cb('privateKey is required');
-  }
+  console.log(args);
   async.waterfall([
     function (cb) {
       if (args.from && Array.isArray(args.from) && args.from.length) {
@@ -264,13 +261,20 @@ TriveAsset.prototype.buildSendAssetTX = function (args, callback) {
     function (assetInfo, cb) {
       // Unsigned Transaction
       var tx = bitcoin.Transaction.fromHex(assetInfo.txHex)
+
+      console.log('tx');
+      if (!args.privateKey) {
+        cb(null, {...args, tx: tx});
+      }
       var txb = bitcoin.TransactionBuilder.fromTransaction(tx)
       var insLength = tx.ins.length
       for (var i = 0; i < insLength; i++) {
         txb.inputs[i].scriptType = null
         if (Array.isArray(args.privateKey)) {
-          const privateKey = new bitcoin.ECKey.fromWIF(args.privateKey[i]);
-          txb.sign(i, privateKey)
+          for (var j = 0; j < args.privateKey.length; j++) {
+            const privateKey = new bitcoin.ECKey.fromWIF(args.privateKey[j]);
+            txb.sign(i, privateKey)
+          }
         } else {
           const privateKey = new bitcoin.ECKey.fromWIF(args.privateKey);
           txb.sign(i, privateKey)
@@ -278,10 +282,6 @@ TriveAsset.prototype.buildSendAssetTX = function (args, callback) {
       }
       tx = txb.build()
       
-      for (let e of tx.ins) {
-        console.log(e)
-      }
-    
       const signedTX = tx.toHex();
       cb(null, signedTX)
     }
