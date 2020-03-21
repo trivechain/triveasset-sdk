@@ -20,8 +20,6 @@ var testnetBlockExplorerHost = 'https://explorer.trvc.dev'
 
 var metadataServerHost = 'https://asset.trivechain.com/metadata'
 
-var verifierPath = 'https://www.triveassets.org/explorer/verify/api.php'
-
 var TriveAsset = function (settings) {
   var self = this
   settings = settings || {}
@@ -32,8 +30,8 @@ var TriveAsset = function (settings) {
     settings.triveAssetHost = settings.triveAssetHost || mainnetTriveAssetHost
     settings.blockExplorerHost = settings.blockExplorerHost || mainnetBlockExplorerHost
   }
-  self.cc = new TriveAssetRpc(settings.triveAssetHost)
-  self.ccb = new TriveAssetBuilder({ network: settings.network })
+  self.ta = new TriveAssetRpc(settings.triveAssetHost)
+  self.tabuilder = new TriveAssetBuilder({ network: settings.network })
   self.blockexplorer = new BlockExplorerRpc(settings.blockExplorerHost)
   if (settings.fullNodeHost) {
     self.chainAdapter = new FullNode({ host: settings.fullNodeHost })
@@ -118,11 +116,11 @@ TriveAsset.prototype.buildTransaction = function (type, ccArgs, callback) {
     var tx
     try {
       if (type === 'send') {
-        tx = self.ccb.buildSendTransaction(ccArgs)
+        tx = self.tabuilder.buildSendTransaction(ccArgs)
       } else if (type === 'burn') {
-        tx = self.ccb.buildBurnTransaction(ccArgs)
+        tx = self.tabuilder.buildBurnTransaction(ccArgs)
       } else if (type === 'issue') {
-        tx = self.ccb.buildIssueTransaction(ccArgs)
+        tx = self.tabuilder.buildIssueTransaction(ccArgs)
       } else {
         return callback('Unknown type.')
       }
@@ -500,7 +498,7 @@ TriveAsset.prototype.getAssetMetadata = function (assetId, utxo, full, callback)
       if (utxo) {
         params.push(utxo)
       }
-      self.cc.get('assetmetadata', params, function (err, md) {
+      self.ta.get('assetmetadata', params, function (err, md) {
         if (err) return cb(err)
         metadata = md
         // cache data

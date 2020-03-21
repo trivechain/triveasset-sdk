@@ -1,7 +1,7 @@
 {
   "name": "triveasset-sdk",
-  "version": "0.3.2",
-  "description": "Colored-Coins SDK for issuing and transferring digital assets using blockchain technology",
+  "version": "1.0.0",
+  "description": "TriveAsset SDK for issuing and transferring digital assets using trivechain blockchain technology",
   "main": "src/triveassets.js",
   "scripts": {
     "test": "mocha",
@@ -14,11 +14,11 @@
     "preversion": "npm run browserify && npm run babel && npm run uglify && npm run client_commit"
   },
   "keywords": [
-    "colored-coins",
-    "bitcoin",
+    "triveasset",
+    "trivechain",
     "blockchain"
   ],
-  "author": "oleiba",
+  "author": "jsheng08",
   "license": "Apache-2.0",
   "dependencies": {
     "async": "^2.1.4",
@@ -27,12 +27,12 @@
     "clone": "^2.1.2",
     "coloredcoins-rpc": "^0.1.0",
     "debug": "^2.6.8",
-    "hdwallet": "file:./custom_modules/hdwallet-0.7.3",
+    "hdwallet": "git+https://github.com/trivechain/hdwallet.git",
     "node-rest-client": "2.5.0",
     "node-rsa": "^0.2.24",
     "request": "^2.79.0",
     "socket.io-client": "^2.0.1",
-    "triveasset-protocol": "file:./custom_modules/triveasset-protocol"
+    "triveasset-protocol": "git+https://github.com/trivechain/triveasset-protocol.git"
   },
   "devDependencies": {
     "babel-cli": "^6.22.2",
