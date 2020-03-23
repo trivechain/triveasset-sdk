@@ -38,9 +38,11 @@ The ```config``` object configure the package to integrate mainnet or testnet. T
 You can generate new mnemonic by removing ```mnemonic``` from the ```config```.
 Now, initiate the package.
 
+### To connect to the explorer
 ```js
 ta.init(function (err) {
   // TriveAsset SDK is now ready
+  console.log("TriveAsset Connected to Explorer");
   // Get your mnemonic
   console.log("mnemonic: ", ta.hdwallet.getMnemonic())
   const address = ta.hdwallet.getAddress(0, 0) // Derive address in position 0,0 from mnemonic
@@ -48,43 +50,49 @@ ta.init(function (err) {
     // Derive the Private Key
     console.log("Address: ", address, ", privkey: ", privkey.getFormattedValue());
   })
-  
-  // Issue the Address
-  const tatIssuanceParams = {
-    amount: 100000000000000, // Amount = 1000000.00000000 (with divisibility)
-    divisibility: 8, // The number of decimal (from 0 - 15 only)
-    // Metadata will be uploaded to IPFS and the IPFS hash will be stored in the transaction
-    metadata: {
-        assetName: "TriveAsset Test",
-        assetSymbol: "TAT",
-        issuer: "Trivechain Limited",
-        description: "The TriveAsset Test (TAT) is used to ensure that the asset is issued correctly",
-        urls:[
-          {
-            name: "website",
-            url: "https://trivechain.com",
-            mimeType: "text/html",
-          },
-          {
-            name: "icon_large", 
-            url:"ipfs://QmafUtZoptBS3inSoNiwKF8VD9zt16DKXAhJv9itSi9EBG",
-            mimeType:"image/png",
-          },{
-            name: "icon",
-            url:"ipfs://QmRNPoyRkAxpBb1mY75X5cJxDtagv3uCVpoz8JQDRig8sN",
-            mimeType:"image/png",
-          }
-        ]
-    },
-    lockStatus: true, // boolean
-    issueAddress: "Issuance Address", //string
-  }
+})
+```
 
-  ta.issueAsset(tatIssuanceParams, function (err, body) {
-    if (err) return console.error(err)
-      console.log("Body: ",body)
-  })
+### To Issue Asset
+```js
+// Issue the Address
+const tatIssuanceParams = {
+  amount: 100000000000000, // Amount = 1000000.00000000 (with divisibility)
+  divisibility: 8, // The number of decimal (from 0 - 15 only)
+  // Metadata will be uploaded to IPFS and the IPFS hash will be stored in the transaction
+  metadata: {
+      assetName: "TriveAsset Test",
+      assetSymbol: "TAT",
+      issuer: "Trivechain Limited",
+      description: "The TriveAsset Test (TAT) is used to ensure that the asset is issued correctly",
+      urls:[
+        {
+          name: "website",
+          url: "https://trivechain.com",
+          mimeType: "text/html",
+        },
+        {
+          name: "icon_large", 
+          url:"ipfs://QmafUtZoptBS3inSoNiwKF8VD9zt16DKXAhJv9itSi9EBG",
+          mimeType:"image/png",
+        },{
+          name: "icon",
+          url:"ipfs://QmRNPoyRkAxpBb1mY75X5cJxDtagv3uCVpoz8JQDRig8sN",
+          mimeType:"image/png",
+        }
+      ]
+  },
+  lockStatus: true, // boolean
+  issueAddress: "Issuance Address", //string
+}
 
+ta.issueAsset(tatIssuanceParams, function (err, body) {
+  if (err) return console.error(err)
+    console.log("Body: ",body)
+})
+```
+### To Send Asset
+``` js
   //create a variable of the transaction you want to send
   let tatSendParams = {
     from: [ "Sender Address", ], //array
@@ -115,7 +123,6 @@ ta.init(function (err) {
       console.log(JSON.parse(err))
       console.log(body)
   })
-})
 ```
 
 ## License
