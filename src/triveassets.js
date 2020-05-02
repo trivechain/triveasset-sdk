@@ -11,6 +11,7 @@ const TriveAssetBuilder = require('triveasset-protocol').TransactionBuilder;
 const BlockExplorer = require('../lib/block_explorer');
 const FullNode = require('../lib/full_node');
 const MetadataServer = require('../lib/metadata_server');
+const fetch = require('node-fetch')
 
 var mainnetTriveAssetHost = 'https://explorer.trivechain.com/api'
 var testnetTriveAssetHost = 'https://explorer.trvc.dev'
@@ -406,7 +407,16 @@ TriveAsset.prototype.getUtxos = function (callback) {
 }
 
 TriveAsset.prototype._getUtxosForAddresses = function (addresses, callback) {
-  this.chainAdapter.getAddressesUtxos(addresses, callback)
+  fetch('https://api.trivechain.com/utxos', {
+        method: 'POST',
+        body:    JSON.stringify({
+          addresses: addresses
+        }),
+        headers: { 'Content-Type': 'application/json' },
+    })
+    .then(res => res.json())
+    .then(json => callback(null, json.utxos))
+    .catch(err => callback(err))
 }
 
 TriveAsset.prototype.getAssets = function (callback) {
