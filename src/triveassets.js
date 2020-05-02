@@ -157,7 +157,16 @@ TriveAsset.prototype.sign = function (txHex, callback) {
 }
 
 TriveAsset.prototype.transmit = function (signedTxHex, callback) {
-  this.chainAdapter.transmit(signedTxHex, callback)
+  fetch('https://api.trivechain.com/rpc/transmit', {
+    method: 'POST',
+    body:    JSON.stringify({
+      txHex: signedTxHex
+    }),
+    headers: { 'Content-Type': 'application/json' },
+  })
+  .then(res => res.json())
+  .then(json => callback(null, json))
+  .catch(err => callback(err))
 }
 
 TriveAsset.prototype.issueAsset = function (args, callback) {
