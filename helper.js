@@ -16,7 +16,6 @@ exports.getUtxo = (addresses) => {
 }
 
 exports.getUtxoDetail = (utxos) => {
-	console.log(addresses)
 	return new Promise(async (resolve, reject) => {
 		fetch(`${properties.trivechainApi}/utxos/address`, {
 			method: 'post',
@@ -30,7 +29,6 @@ exports.getUtxoDetail = (utxos) => {
 }
 
 exports.transmit = (txHex) => {
-	console.log(addresses)
 	return new Promise(async (resolve, reject) => {
 		fetch(`${properties.trivechainApi}/rpc/transmit`, {
 			method: 'post',

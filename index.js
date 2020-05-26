@@ -27,13 +27,21 @@ const buildSendAssetTX = async (args) => {
 			throw new Error(`Private key is not a valid address on ${params.network}`);
 		}
 
-		// let utxos = null;
+		let utxos = null;
 		// if (params.from) {
 		// 	await getUtxo(params.from)
 		// 		.then(res => utxos = res)
 		// 		.catch(err => { throw new Error(err) })
 		// } else {
-		// 	await getUtxoDetail(params.utxos)
+		// 	const txidsIndexes = params.utxos.map(utxo => {
+		// 		const utxoParts = utxo.split(':');
+		// 		return {
+		// 			txid: utxoParts[0],
+		// 			index: utxoParts[1],
+		// 		}
+		// 	})
+
+		// 	await getUtxoDetail(txidsIndexes)
 		// 		.then(res => utxos = res)
 		// 		.catch(err => { throw new Error(err) });
 		// }
