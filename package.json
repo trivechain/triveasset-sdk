@@ -15,5 +15,12 @@
   "bugs": {
     "url": "https://github.com/trivechain/triveasset-sdk/issues"
   },
-  "homepage": "https://github.com/trivechain/triveasset-sdk#readme"
+  "homepage": "https://github.com/trivechain/triveasset-sdk#readme",
+  "dependencies": {
+    "@hapi/joi": "^17.1.1",
+    "@trivechain/triveasset-protocol": "^1.0.0",
+    "@trivechain/trivechaincore-lib": "git+https://github.com/trivechain/trivechaincore-lib.git",
+    "bitcoinjs-lib": "^1.5.8",
+    "node-fetch": "^2.6.0"
+  }
 }
