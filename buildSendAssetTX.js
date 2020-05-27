@@ -77,15 +77,15 @@ const buildSendAssetTX = async (args) => {
 			return { unsignedTxHex: txBuilt.txHex }
 		}
 
-		let tx = bitcoin.Transaction.fromHex(txBuilt.txHex);
+		let txb = txBuilt.txb
 
-		let txb = bitcoin.TransactionBuilder.fromTransaction(tx);
-
-		for (var i = 0; i < tx.ins.length; i++) {
-			for (let priv of params.privateKey) {
-				txb.inputs[i].scriptType = null;
-				const privateKey = new bitcoin.ECKey.fromWIF(priv);
-				txb.sign(i, privateKey)
+		for (let priv of params.privateKey) {
+			const privateKey = new bitcoin.ECPair.fromWIF(priv, txb.network);
+			for (var i = 0; i < txb.tx.ins.length; i++) {
+				if (new Trivechaincore.Script.fromAddress(privateKey.getAddress()).toHex() == Buffer.from(txb.inputs[i].prevOutScript).toString('hex')) {
+					txb.inputs[i].scriptType = null;
+					txb.sign(i, privateKey)
+				}
 			}
 		}
 
@@ -113,10 +113,3 @@ const buildSendAssetTX = async (args) => {
 }
 
 module.exports = buildSendAssetTX;
-
-
-
-
-
-
-
