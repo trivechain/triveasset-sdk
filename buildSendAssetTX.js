@@ -73,7 +73,6 @@ const buildSendAssetTX = async (args) => {
 
 		//return unsigned tx hex
 		if (!params.privateKey) {
-			console.log({ unsignedTxHex: txBuilt.txHex })
 			return { unsignedTxHex: txBuilt.txHex }
 		}
 
@@ -92,7 +91,6 @@ const buildSendAssetTX = async (args) => {
 		tx = txb.build();
 
 		const signedTxHex = tx.toHex();
-		console.log(signedTxHex)
 		//return signed tx hex
 		if (!params.transmit) {
 			return { signedTxHex: signedTxHex }
@@ -102,11 +100,10 @@ const buildSendAssetTX = async (args) => {
 		await transmit(signedTxHex)
 			.then(res => transmitResp = res)
 			.catch(err => { throw new Error(err) });
-		console.log(transmitResp)
+
 		return transmitResp;
 
 	} catch (err) {
-		console.log('--CATCH--')
 		console.error(err)
 		return err;
 	}

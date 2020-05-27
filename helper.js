@@ -2,7 +2,6 @@ const fetch = require('node-fetch');
 const properties = require('./properties');
 
 exports.getAddressesUtxo = (addresses) => {
-	console.log(addresses)
 	return new Promise(async (resolve, reject) => {
 		fetch(`${properties.trivechainApi}/utxos/address`, {
 			method: 'post',
