@@ -14,9 +14,9 @@ exports.getAddressesUtxo = (addresses) => {
 	});
 }
 
-exports.getUtxoDetail = (utxos) => {
+exports.getUtxosDetail = () => {
 	return new Promise(async (resolve, reject) => {
-		fetch(`${properties.trivechainApi}/utxos/address`, {
+		fetch(`${properties.trivechainApi}/utxos`, {
 			method: 'post',
 			body: JSON.stringify({ utxos }),
 			headers: { 'Content-Type': 'application/json' },

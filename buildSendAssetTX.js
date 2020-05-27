@@ -2,7 +2,7 @@ const Trivechaincore = require('@trivechain/trivechaincore-lib');
 const TriveAssetProtocol = require('@trivechain/triveasset-protocol');
 const bitcoin = require('bitcoinjs-lib');
 const { sendBuildAssetTXSchema, utxoConsolidationSchema } = require('./validation');
-const { getAddressesUtxo, getUtxoDetail, transmit, sleep } = require('./helper');
+const { getAddressesUtxo, getUtxosDetail, transmit, sleep } = require('./helper');
 
 const { Address, Networks, PrivateKey } = Trivechaincore;
 const { TransactionBuilder } = TriveAssetProtocol;
@@ -17,12 +17,12 @@ const buildSendAssetTX = async (args) => {
 					throw new Error(`${addr} is not a valid address on ${params.network}`);
 				}
 			}
+			if (!Address.isValid(params.coloredChangeAddress, Networks[params.network])) {
+				throw new Error(`Address ${params.coloredChangeAddress} is not valid on ${params.network}`);
+			}
 		}
 		if (!Address.isValid(params.financeChangeAddress, Networks[params.network])) {
 			throw new Error(`${params.financeChangeAddress} is not a valid address on ${params.network}`);
-		}
-		if (!Address.isValid(params.coloredChangeAddress, Networks[params.network])) {
-			throw new Error(`Address ${params.coloredChangeAddress} is not valid on ${params.network}`);
 		}
 		if (params.privateKey) {
 			for (let pk of params.privateKey) {
@@ -38,15 +38,12 @@ const buildSendAssetTX = async (args) => {
 				.then(res => utxos = res)
 				.catch(err => { throw new Error(err) })
 		} else {
-			const txidsIndexes = params.utxos.map(utxo => {
-				const utxoParts = utxo.split(':');
-				return {
-					txid: utxoParts[0],
-					index: utxoParts[1],
-				}
-			})
+			let txidsIndexes = [];
+			for (let utxo of params.utxos) {
+				txidsIndexes.push(`${utxo.txid}:${utxo.index}`)
+			}
 
-			await getUtxoDetail(txidsIndexes)
+			await getUtxosDetail(txidsIndexes)
 				.then(res => utxos = res)
 				.catch(err => { throw new Error(err) });
 		}
