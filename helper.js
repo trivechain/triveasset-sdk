@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 const properties = require('./properties');
 
-exports.getUtxo = (addresses) => {
+exports.getAddressesUtxo = (addresses) => {
 	console.log(addresses)
 	return new Promise(async (resolve, reject) => {
 		fetch(`${properties.trivechainApi}/utxos/address`, {
@@ -39,4 +39,8 @@ exports.transmit = (txHex) => {
 			.then(json => { return resolve(json) })
 			.catch(err => { return reject(err) })
 	});
+}
+
+exports.sleep = (milliseconds) => {
+	return new Promise(resolve => setTimeout(resolve, milliseconds))
 }

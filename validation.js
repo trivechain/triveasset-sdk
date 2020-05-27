@@ -16,5 +16,16 @@ exports.sendBuildAssetTXSchema = Joi.object({
 	metadata: Joi.object().optional(),
 	transmit: Joi.bool().default(true).optional(),
 	network: Joi.string().lowercase().valid('mainnet', 'testnet').required(),
-}).xor('from', 'utxos');
+})
+	.xor('from', 'utxos');
 
+exports.utxoConsolidationSchema = Joi.object({
+	from: Joi.array().items(Joi.string().pattern(/^[T8ts][1-9A-HJ-NP-Za-km-z]{33}$/).required()).required(),
+	assetId: Joi.string().pattern(/^[LU][1-9A-HJ-NP-Za-km-z]{37}$/).required(),
+	privateKey: Joi.array().items(Joi.string().length(52).required()).optional(),
+	financeChangeAddress: Joi.string().pattern(/^[T8ts][1-9A-HJ-NP-Za-km-z]{33}$/).required(),
+	coloredChangeAddress: Joi.string().pattern(/^[T8ts][1-9A-HJ-NP-Za-km-z]{33}$/).required(),
+	metadata: Joi.object().optional(),
+	transmit: Joi.bool().default(true).optional(),
+	network: Joi.string().lowercase().valid('mainnet', 'testnet').required(),
+});
