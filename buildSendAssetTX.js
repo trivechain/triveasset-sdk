@@ -7,7 +7,7 @@ const { getAddressesUtxo, getUtxoDetail, transmit, sleep } = require('./helper')
 const { Address, Networks, PrivateKey } = Trivechaincore;
 const { TransactionBuilder } = TriveAssetProtocol;
 
-exports.buildSendAssetTX = async (args) => {
+const buildSendAssetTX = async (args) => {
 	try {
 		let params = await sendBuildAssetTXSchema.validateAsync(args);
 
