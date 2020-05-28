@@ -1,8 +1,8 @@
 const Trivechaincore = require('@trivechain/trivechaincore-lib');
 const TriveAssetProtocol = require('@trivechain/triveasset-protocol');
 const bitcoin = require('bitcoinjs-lib');
-const { sendBuildAssetTXSchema, utxoConsolidationSchema } = require('./validation');
-const { getAddressesUtxo, getUtxosDetail, transmit, sleep } = require('./helper');
+const { sendBuildAssetTXSchema, utxoConsolidationSchema } = require('./lib/validation');
+const { getAddressesUtxo, getUtxosDetail, transmit, uploadMetadata } = require('./lib/helper');
 
 const { Address, Networks, PrivateKey } = Trivechaincore;
 const { TransactionBuilder } = TriveAssetProtocol;
@@ -68,6 +68,10 @@ const buildSendAssetTX = async (args) => {
 		if (params.from) {
 			delete params.from;
 		}
+
+		await uploadMetadata(params)
+			.then(res => { params = res })
+			.catch(err => { throw new Error(err) });
 
 		const tabuilder = new TransactionBuilder({ network: params.network });
 
