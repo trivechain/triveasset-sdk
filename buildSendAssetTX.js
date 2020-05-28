@@ -64,6 +64,11 @@ const buildSendAssetTX = async (args) => {
 			throw new Error('Some of the utxos is invalid, please make sure all utxos is confirmed and valid.')
 		}
 
+		// by this time, 'from' should be deleted;
+		if (params.from) {
+			delete params.from;
+		}
+
 		const tabuilder = new TransactionBuilder({ network: params.network });
 
 		const txBuilt = await tabuilder.buildSendTransaction(params);
