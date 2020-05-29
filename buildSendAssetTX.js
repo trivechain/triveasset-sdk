@@ -1,7 +1,7 @@
 const Trivechaincore = require('@trivechain/trivechaincore-lib');
 const TriveAssetProtocol = require('@trivechain/triveasset-protocol');
 const bitcoin = require('bitcoinjs-lib');
-const { sendBuildAssetTXSchema, utxoConsolidationSchema } = require('./lib/validation');
+const { sendBuildAssetTXSchema } = require('./lib/validation');
 const { getAddressesUtxo, getUtxosDetail, transmit, uploadMetadata } = require('./lib/helper');
 
 const { Address, Networks, PrivateKey } = Trivechaincore;
@@ -52,13 +52,14 @@ const buildSendAssetTX = async (args) => {
 
 		const inputUtxos = params.utxos;
 		params.utxos = [];
-		for (let u of utxos) {
-			if (u.iscoinbase && !u.isConfirmed) continue;
+		for (let i = utxos.length - 1; i >= 0; i--) {
+			if (utxos[i].iscoinbase && !utxos[i].isConfirmed) continue;
 
-			u.value = u.valueSat;
-			params.utxos.push(u);
+			utxos[i].value = utxos[i].valueSat;
+			console.log(utxos[i].value)
+			params.utxos.push(utxos[i]);
 		}
-
+		
 		// check user input utxos got unconfirmed or invalid utxo
 		if (!params.from && inputUtxos.length !== params.utxos.length) {
 			throw new Error('Some of the utxos is invalid, please make sure all utxos is confirmed and valid.')
@@ -99,7 +100,7 @@ const buildSendAssetTX = async (args) => {
 		const signedTxHex = tx.toHex();
 		//return signed tx hex
 		if (!params.transmit) {
-			return { signedTxHex: signedTxHex }
+			return { signedTxHex }
 		}
 
 		let transmitResp = null;

@@ -1,4 +1,15 @@
-const NOT_SAFE_utxoConsolidation = async (args) => {
+const Trivechaincore = require('@trivechain/trivechaincore-lib');
+const TriveAssetProtocol = require('@trivechain/triveasset-protocol');
+const bitcoin = require('bitcoinjs-lib');
+const { utxoConsolidationSchema } = require('./lib/validation');
+const { getAddressesUtxo, transmit, uploadMetadata } = require('./lib/helper');
+
+const { Address, Networks, PrivateKey } = Trivechaincore;
+const { TransactionBuilder } = TriveAssetProtocol;
+
+const UTXO_LIMIT = 500;
+
+const utxoConsolidation = async (args) => {
 	try {
 		let params = await utxoConsolidationSchema.validateAsync(args);
 
@@ -21,8 +32,11 @@ const NOT_SAFE_utxoConsolidation = async (args) => {
 			}
 		}
 
+		let skip = 0;
+		let loop = true;
+
 		let utxos = null;
-		await getAddressesUtxo(params.from)
+		await getAddressesUtxo(params.from, UTXO_LIMIT, skip)
 			.then(res => utxos = res)
 			.catch(err => { throw new Error(err) })
 		console.log('numOfUtxos:', utxos.numOfUtxos);
@@ -31,40 +45,58 @@ const NOT_SAFE_utxoConsolidation = async (args) => {
 		params.utxos = [];
 		let utxosChunk = [];
 		let assetValueSat = BigInt(0);
-		let count = 0;
+		let valueSat = BigInt(0);
+		let tempUtxo = [];
+		let trvcNeeded = BigInt(7441);
 
 		// slice the utxos into utxosChunk
-		for (let i in utxos) {
-			let tempUtxo = [];
+		for (let i = utxos.length - 1; i >= 0; i--) {
 			if (!utxos[i].isConfirmed) continue;
 
 			utxos[i].value = utxos[i].valueSat;
 
+			// for trvc
+			if (utxos[i].assets.length === 0) {
+				if (valueSat < trvcNeeded) {
+					console.log('no asset')
+					valueSat += BigInt(utxos[i].value);
+					tempUtxo.push(utxos[i]);
+					trvcNeeded += BigInt(1000);
+				}
+			}
+
+			// for asset
 			for (let a of utxos[i].assets) {
 				if (a.assetId === params.assetId) {
-					// console.log('amount:', a.amount)
+					valueSat += BigInt(utxos[i].value);
 					assetValueSat += BigInt(a.amount);
 					tempUtxo.push(utxos[i]);
-					count += 1;
+					trvcNeeded += BigInt(1000);
 					break;
 				}
 			}
 
 			// if finish looping, minimum 50 utxo to consolidate, else, 200 utxo every consolidation
-			if (i === (utxos.length - 1) && count >= 2) {
-				console.log('last:', count)
+			if (i === 0 && tempUtxo.length >= 2) {
+				console.log('last:', tempUtxo.length)
 				utxosChunk.push({
 					utxos: tempUtxo,
 					amount: Number(assetValueSat),
+					fee: Number(trvcNeeded - BigInt(5441))
 				});
 
-			} else if (count >= 5) {
-				console.log('count:', count)
+			} else if (tempUtxo.length >= 5) {
+				console.log('count:', tempUtxo.length)
 				utxosChunk.push({
 					utxos: tempUtxo,
 					amount: Number(assetValueSat),
+					fee: Number(trvcNeeded - BigInt(5441))
 				});
 				count = 0;
+				tempUtxo = [];
+				assetValueSat = BigInt(0);
+				trvcNeeded = BigInt(7441);
+				valueSat = BigInt(0);
 			}
 		}
 
@@ -74,12 +106,10 @@ const NOT_SAFE_utxoConsolidation = async (args) => {
 
 		const tabuilder = new TransactionBuilder({ network: params.network });
 
-		let unsignedTxHex = [];
-		let signedTxHex = [];
+		let unsignedTxHexArray = [];
+		let signedTxHexArray = [];
 		let txid = [];
 
-		console.log(utxosChunk[0].utxos.length);
-		console.log(utxosChunk[1].utxos.length);
 		console.log('utxosChunk length:', utxosChunk.length)
 
 		// start build send asset
@@ -92,34 +122,45 @@ const NOT_SAFE_utxoConsolidation = async (args) => {
 
 			params.utxos = chunk.utxos
 
+			params.fee = chunk.fee;
+
+			console.log(params.utxos.length, params.fee)
+			//don't have to upload ipfs everytime since it is the same metadata
+			if (params.metadata && !params.ipfsHash) {
+				await uploadMetadata(params)
+					.then(res => { params = res })
+					.catch(err => { throw new Error(err) });
+			}
+
 			const txBuilt = await tabuilder.buildSendTransaction(params);
 
 			//return unsigned tx hex
 			if (!params.privateKey) {
-				console.log(txBuilt.txHex);
-				unsignedTxHex.push(txBuilt.txHex);
+				// console.log(txBuilt.txHex);
+				unsignedTxHexArray.push(txBuilt.txHex);
 				continue;
 			}
 
-			let tx = bitcoin.Transaction.fromHex(txBuilt.txHex);
+			let txb = txBuilt.txb;
 
-			let txb = bitcoin.TransactionBuilder.fromTransaction(tx);
-
-			for (var i = 0; i < tx.ins.length; i++) {
-				for (let priv of params.privateKey) {
-					txb.inputs[i].scriptType = null;
-					const privateKey = new bitcoin.ECKey.fromWIF(priv);
-					txb.sign(i, privateKey)
+			for (let priv of params.privateKey) {
+				const privateKey = new bitcoin.ECPair.fromWIF(priv, txb.network);
+				for (var i = 0; i < txb.tx.ins.length; i++) {
+					if (new Trivechaincore.Script.fromAddress(privateKey.getAddress()).toHex() == Buffer.from(txb.inputs[i].prevOutScript).toString('hex')) {
+						txb.inputs[i].scriptType = null;
+						txb.sign(i, privateKey);
+					}
 				}
 			}
 
 			tx = txb.build();
 
-			const signedTx = tx.toHex();
-			console.log(signedTxHex)
+			const signedTxHex = tx.toHex();
+
 			//return signed tx hex
 			if (!params.transmit) {
-				signedTxHex.push(signedTx);
+				// console.log(signedTxHex)
+				signedTxHexArray.push(signedTxHex);
 				continue;
 			}
 
@@ -131,6 +172,7 @@ const NOT_SAFE_utxoConsolidation = async (args) => {
 
 			if (transmitResp && transmitResp.txid) {
 				txid.push(transmitResp.txid);
+				return txid
 			} else {
 
 				if (txid.length > 0) {
@@ -141,15 +183,16 @@ const NOT_SAFE_utxoConsolidation = async (args) => {
 			}
 		}
 
-		if (params.transmit) {
+
+		if (txid.length) {
 			return { txid }
 		}
 
-		if (params.privateKey) {
-			return { signedTxHex }
+		if (signedTxHexArray.length) {
+			return { signedTxHex: signedTxHexArray }
 		}
 
-		return { unsignedTxHex }
+		return { unsignedTxHex: unsignedTxHexArray }
 
 	} catch (err) {
 		console.log('--CATCH--')
@@ -158,4 +201,4 @@ const NOT_SAFE_utxoConsolidation = async (args) => {
 	}
 }
 
-module.exports = NOT_SAFE_utxoConsolidation;
+module.exports = utxoConsolidation;
