@@ -32,157 +32,131 @@ const utxoConsolidation = async (args) => {
 			}
 		}
 
-		let skip = 0;
-		let loop = true;
-
-		let utxos = null;
-		await getAddressesUtxo(params.from, UTXO_LIMIT, skip)
-			.then(res => utxos = res)
-			.catch(err => { throw new Error(err) })
-		console.log('numOfUtxos:', utxos.numOfUtxos);
-		utxos = utxos.utxos;
-
-		params.utxos = [];
-		let utxosChunk = [];
-		let assetValueSat = BigInt(0);
-		let valueSat = BigInt(0);
-		let tempUtxo = [];
-		let trvcNeeded = BigInt(7441);
-
-		// slice the utxos into utxosChunk
-		for (let i = utxos.length - 1; i >= 0; i--) {
-			if (!utxos[i].isConfirmed) continue;
-
-			utxos[i].value = utxos[i].valueSat;
-
-			// for trvc
-			if (utxos[i].assets.length === 0) {
-				if (valueSat < trvcNeeded) {
-					console.log('no asset')
-					valueSat += BigInt(utxos[i].value);
-					tempUtxo.push(utxos[i]);
-					trvcNeeded += BigInt(1000);
-				}
-			}
-
-			// for asset
-			for (let a of utxos[i].assets) {
-				if (a.assetId === params.assetId) {
-					valueSat += BigInt(utxos[i].value);
-					assetValueSat += BigInt(a.amount);
-					tempUtxo.push(utxos[i]);
-					trvcNeeded += BigInt(1000);
-					break;
-				}
-			}
-
-			// if finish looping, minimum 50 utxo to consolidate, else, 200 utxo every consolidation
-			if (i === 0 && tempUtxo.length >= 2) {
-				console.log('last:', tempUtxo.length)
-				utxosChunk.push({
-					utxos: tempUtxo,
-					amount: Number(assetValueSat),
-					fee: Number(trvcNeeded - BigInt(5441))
-				});
-
-			} else if (tempUtxo.length >= 5) {
-				console.log('count:', tempUtxo.length)
-				utxosChunk.push({
-					utxos: tempUtxo,
-					amount: Number(assetValueSat),
-					fee: Number(trvcNeeded - BigInt(5441))
-				});
-				count = 0;
-				tempUtxo = [];
-				assetValueSat = BigInt(0);
-				trvcNeeded = BigInt(7441);
-				valueSat = BigInt(0);
-			}
-		}
-
-		if (utxosChunk.length <= 0) {
-			throw new Error('Your number of utxos is less than 50.')
-		}
-
 		const tabuilder = new TransactionBuilder({ network: params.network });
 
 		let unsignedTxHexArray = [];
 		let signedTxHexArray = [];
 		let txid = [];
 
-		console.log('utxosChunk length:', utxosChunk.length)
+		let assetValueSat = BigInt(0);
+		let utxoToSend = [];
+		let fee = BigInt(3000);
+		let build = false;
+		params.utxos = [];
 
-		// start build send asset
-		for (let chunk of utxosChunk) {
-			params.to = [{
-				address: params.coloredChangeAddress,
-				amount: chunk.amount,
-				assetId: params.assetId,
-			}]
+		let skip = 0;
+		let loopApi = true;
 
-			params.utxos = chunk.utxos
+		while (loopApi) {
+			let utxos = null;
+			await getAddressesUtxo(params.from, UTXO_LIMIT, skip, params.assetId)
+				.then(res => utxos = res)
+				.catch(err => { throw new Error(err) });
+			console.log('numOfUtxos:', utxos.numOfUtxos);
 
-			params.fee = chunk.fee;
+			utxos = utxos.utxos;
 
-			console.log(params.utxos.length, params.fee)
-			//don't have to upload ipfs everytime since it is the same metadata
-			if (params.metadata && !params.ipfsHash) {
-				await uploadMetadata(params)
-					.then(res => { params = res })
-					.catch(err => { throw new Error(err) });
+			// // if too less utxos
+			// if (utxos.length < 50) {
+			// 	throw new Error(`The minimum bumber of utxos consolidation is 50 while the addresses only have ${utxos.length} utxos.`)
+			// }
+
+			// check if this is the last loop
+			if (utxos.length < UTXO_LIMIT) {
+				loop = false;
+			} else {
+				skip += UTXO_LIMIT;
 			}
 
-			const txBuilt = await tabuilder.buildSendTransaction(params);
+			for (let i = utxos.length - 1; i >= 0; i--) {
+				if (!utxos[i].isConfirmed) continue;
 
-			//return unsigned tx hex
-			if (!params.privateKey) {
-				// console.log(txBuilt.txHex);
-				unsignedTxHexArray.push(txBuilt.txHex);
-				continue;
-			}
-
-			let txb = txBuilt.txb;
-
-			for (let priv of params.privateKey) {
-				const privateKey = new bitcoin.ECPair.fromWIF(priv, txb.network);
-				for (var i = 0; i < txb.tx.ins.length; i++) {
-					if (new Trivechaincore.Script.fromAddress(privateKey.getAddress()).toHex() == Buffer.from(txb.inputs[i].prevOutScript).toString('hex')) {
-						txb.inputs[i].scriptType = null;
-						txb.sign(i, privateKey);
+				// for asset
+				for (let a of utxos[i].assets) {
+					if (a.assetId === params.assetId) {
+						assetValueSat += BigInt(a.amount);
+						utxos[i].value = utxos[i].valueSat;
+						utxoToSend.push(utxos[i]);
+						fee += BigInt(1000);
+						break;
 					}
 				}
-			}
 
-			tx = txb.build();
+				// if number of utxos reach maximum || this is the last utxo ever from the address and has more than 50 utxo
+				if (utxoToSend.length >= 250 || (i === 0 && utxoToSend >= 50 && !loopApi)) build = true;
 
-			const signedTxHex = tx.toHex();
+				if (!build) continue;
 
-			//return signed tx hex
-			if (!params.transmit) {
-				// console.log(signedTxHex)
-				signedTxHexArray.push(signedTxHex);
-				continue;
-			}
+				params.to = [{
+					address: params.coloredChangeAddress,
+					amount: Number(assetValueSat),
+					assetId: params.assetId,
+				}];
+				params.utxos = utxoToSend;
+				params.fee = Number(fee);
 
-			let transmitResp = null;
-			await transmit(signedTxHex)
-				.then(res => transmitResp = res)
-				.catch(err => transmitResp = err);
+				// re-declare into initial value for next for loop
+				utxoToSend = [];
+				assetValueSat = BigInt(0);
+				fee = BigInt(3000);
+				build = false;
 
-
-			if (transmitResp && transmitResp.txid) {
-				txid.push(transmitResp.txid);
-				return txid
-			} else {
-
-				if (txid.length > 0) {
-					return { txid, m: 'Some transaction failed to broadcast' }
-				} else {
-					throw new Error(transmitResp);
+				//don't have to upload ipfs everytime since it is the same metadata
+				if (params.metadata && !params.ipfsHash) {
+					await uploadMetadata(params)
+						.then(res => { params = res })
+						.catch(err => { throw new Error(err) });
 				}
-			}
-		}
 
+				const txBuilt = await tabuilder.buildSendTransaction(params);
+
+				//return unsigned tx hex
+				if (!params.privateKey) {
+					unsignedTxHexArray.push(txBuilt.txHex);
+					continue;
+				}
+
+				let txb = txBuilt.txb;
+
+				for (let priv of params.privateKey) {
+					const privateKey = new bitcoin.ECPair.fromWIF(priv, txb.network);
+					for (var j = 0; j < txb.tx.ins.length; j++) {
+						if (new Trivechaincore.Script.fromAddress(privateKey.getAddress()).toHex() == Buffer.from(txb.inputs[j].prevOutScript).toString('hex')) {
+							txb.inputs[j].scriptType = null;
+							txb.sign(j, privateKey);
+						}
+					}
+				}
+
+				tx = txb.build();
+
+				const signedTxHex = tx.toHex();
+
+				//return signed tx hex
+				if (!params.transmit) {
+					signedTxHexArray.push(signedTxHex);
+					continue;
+				}
+
+				let transmitResp = null;
+				await transmit(signedTxHex)
+					.then(res => transmitResp = res)
+					.catch(err => transmitResp = err);
+
+
+				if (transmitResp && transmitResp.txid) {
+					txid.push(transmitResp.txid);
+					// return txid
+				} else {
+					if (txid.length > 0) {
+						return { txid, m: transmitResp }
+					} else {
+						throw new Error(transmitResp);
+					}
+				}
+
+			} // end of for loop
+		} //end of while loop
 
 		if (txid.length) {
 			return { txid }

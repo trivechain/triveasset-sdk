@@ -34,9 +34,9 @@ const buildSendAssetTX = async (args) => {
 
 		let utxos = null;
 		if (params.from) {
-			await getAddressesUtxo(params.from)
+			await getAddressesUtxo(params.from, 500, 0)
 				.then(res => utxos = res)
-				.catch(err => { throw new Error(err) })
+				.catch(err => { throw new Error(err) });
 		} else {
 			let txidsIndexes = [];
 			for (let utxo of params.utxos) {
@@ -56,7 +56,6 @@ const buildSendAssetTX = async (args) => {
 			if (utxos[i].iscoinbase && !utxos[i].isConfirmed) continue;
 
 			utxos[i].value = utxos[i].valueSat;
-			console.log(utxos[i].value)
 			params.utxos.push(utxos[i]);
 		}
 		
@@ -65,7 +64,7 @@ const buildSendAssetTX = async (args) => {
 			throw new Error('Some of the utxos is invalid, please make sure all utxos is confirmed and valid.')
 		}
 
-		// by this time, 'from' should be deleted;
+		// by this time, 'from' should be deleted
 		if (params.from) {
 			delete params.from;
 		}
