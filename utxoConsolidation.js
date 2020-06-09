@@ -2,12 +2,13 @@ const Trivechaincore = require('@trivechain/trivechaincore-lib');
 const TriveAssetProtocol = require('@trivechain/triveasset-protocol');
 const bitcoin = require('bitcoinjs-lib');
 const { utxoConsolidationSchema } = require('./lib/validation');
+const properties = require('./lib/properties');
 const { getAddressesUtxo, transmit, uploadMetadata } = require('./lib/helper');
 
 const { Address, Networks, PrivateKey } = Trivechaincore;
 const { TransactionBuilder } = TriveAssetProtocol;
 
-const UTXO_LIMIT = 500;
+const utxoLimit = properties.utxoLimit;
 
 const utxoConsolidation = async (args) => {
 	try {
@@ -49,44 +50,45 @@ const utxoConsolidation = async (args) => {
 
 		while (loopApi) {
 			let utxos = null;
-			await getAddressesUtxo(params.from, UTXO_LIMIT, skip, params.assetId)
+			await getAddressesUtxo(params.from, utxoLimit, skip, params.assetId)
 				.then(res => utxos = res)
 				.catch(err => { throw new Error(err) });
-			console.log('numOfUtxos:', utxos.numOfUtxos);
+
+			console.log('numOfUtxos:', utxos.totalCount);
 
 			utxos = utxos.utxos;
 
-			// // if too less utxos
-			// if (utxos.length < 50) {
+			// if too less utxos
+			// if (utxoToSend.length <= 0 && utxos.length < 50) {
 			// 	throw new Error(`The minimum bumber of utxos consolidation is 50 while the addresses only have ${utxos.length} utxos.`)
 			// }
 
 			// check if this is the last loop
-			if (utxos.length < UTXO_LIMIT) {
-				loop = false;
+			if (utxos.length < utxoLimit) {
+				loopApi = false;
 			} else {
-				skip += UTXO_LIMIT;
+				skip += utxoLimit;
 			}
 
 			for (let i = utxos.length - 1; i >= 0; i--) {
-				if (!utxos[i].isConfirmed) continue;
+				if (utxos[i].iscoinbase && !utxos[i].isConfirmed) continue;
 
 				// for asset
 				for (let a of utxos[i].assets) {
 					if (a.assetId === params.assetId) {
+            utxos[i].value = utxos[i].valueSat;
 						assetValueSat += BigInt(a.amount);
-						utxos[i].value = utxos[i].valueSat;
 						utxoToSend.push(utxos[i]);
 						fee += BigInt(1000);
 						break;
 					}
 				}
-
+				// console.log(i, utxoToSend.length, !loopApi)
 				// if number of utxos reach maximum || this is the last utxo ever from the address and has more than 50 utxo
-				if (utxoToSend.length >= 250 || (i === 0 && utxoToSend >= 50 && !loopApi)) build = true;
+				if (utxoToSend.length >= 300 || (i === 0 && utxoToSend.length >= 100 && !loopApi)) build = true;
 
 				if (!build) continue;
-
+				
 				params.to = [{
 					address: params.coloredChangeAddress,
 					amount: Number(assetValueSat),
@@ -107,7 +109,7 @@ const utxoConsolidation = async (args) => {
 						.then(res => { params = res })
 						.catch(err => { throw new Error(err) });
 				}
-
+				// console.log(params)
 				const txBuilt = await tabuilder.buildSendTransaction(params);
 
 				//return unsigned tx hex
@@ -163,9 +165,11 @@ const utxoConsolidation = async (args) => {
 		}
 
 		if (signedTxHexArray.length) {
+			console.log(signedTxHexArray.length)
 			return { signedTxHex: signedTxHexArray }
 		}
 
+		console.log(unsignedTxHexArray.length)
 		return { unsignedTxHex: unsignedTxHexArray }
 
 	} catch (err) {
