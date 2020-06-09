@@ -38,10 +38,10 @@ const buildSendAssetTX = async (args) => {
 
 
     let utxos = [];
-    let skip = 0;
-    let loop = true;
 
     if (params.from) {
+      let skip = 0;
+      let loop = true;
       while (loop) {
         let tempUtxos;
         await getAddressesUtxo(params.from, utxoLimit, skip)
