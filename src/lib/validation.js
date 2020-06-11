@@ -31,3 +31,16 @@ exports.utxoConsolidationSchema = Joi.object({
   transmit: Joi.bool().default(true).optional(),
   network: Joi.string().lowercase().valid('mainnet', 'testnet').required()
 });
+
+exports.mnemonicSchema = Joi.object({
+  mnemonicStr: Joi.string().pattern(/^([a-zA-Z0-9]* ){11}[a-zA-Z0-9]*$/).required(),
+  mnemonicAccount: Joi.number()
+    .integer()
+    .min(0)
+    .max(1000000).required(),
+  mnemonicIndex: Joi.number()
+    .integer()
+    .min(0)
+    .max(10000000).required(),
+  network: Joi.string().lowercase().valid('mainnet', 'testnet').required()
+});
