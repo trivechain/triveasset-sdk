@@ -42,7 +42,7 @@ const buildSendAssetTX = async (args) => {
       let loop = true;
       while (loop) {
         let tempUtxos;
-        await getAddressesUtxo(params.from, utxoLimit, skip)
+        await getAddressesUtxo(params.network, params.from, utxoLimit, skip)
           .then(res => { tempUtxos = res; })
           .catch(err => { throw new Error(err); });
 
@@ -60,7 +60,7 @@ const buildSendAssetTX = async (args) => {
         txidsIndexes.push(`${utxo.txid}:${utxo.index}`);
       }
 
-      await getUtxosDetail(txidsIndexes)
+      await getUtxosDetail(params.network, txidsIndexes)
         .then(res => { utxos = res.utxos; })
         .catch(err => { throw new Error(err); });
     }
@@ -128,7 +128,7 @@ const buildSendAssetTX = async (args) => {
     }
 
     let transmitResp = null;
-    await transmit(signedTxHex)
+    await transmit(params.network, signedTxHex)
       .then(res => { transmitResp = res; })
       .catch(err => { throw new Error(err); });
 
