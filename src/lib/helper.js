@@ -2,8 +2,8 @@ const fetch = require('node-fetch');
 const properties = require('./properties');
 const MetadataServer = require('./metadataServer');
 
-exports.getAddressesUtxo = (addresses, limit, skip, assetId = null) => {
-  let url = `${properties.trivechainApi}/utxos/address?limit=${limit}&skip=${skip}`;
+exports.getAddressesUtxo = (network, addresses, limit, skip, assetId = null) => {
+  let url = `${properties.trivechainApi[network]}/utxos/address?limit=${limit}&skip=${skip}`;
   if (assetId) url += `&assetId=${assetId}`;
 
   return new Promise((resolve, reject) => {
@@ -18,9 +18,9 @@ exports.getAddressesUtxo = (addresses, limit, skip, assetId = null) => {
   });
 };
 
-exports.getUtxosDetail = (utxos) => {
+exports.getUtxosDetail = (network, utxos) => {
   return new Promise((resolve, reject) => {
-    fetch(`${properties.trivechainApi}/utxos`, {
+    fetch(`${properties.trivechainApi[network]}/utxos`, {
       method: 'post',
       body: JSON.stringify({ utxos }),
       headers: { 'Content-Type': 'application/json' }
@@ -31,9 +31,9 @@ exports.getUtxosDetail = (utxos) => {
   });
 };
 
-exports.transmit = (txHex) => {
+exports.transmit = (network, txHex) => {
   return new Promise((resolve, reject) => {
-    fetch(`${properties.trivechainApi}/rpc/transmit`, {
+    fetch(`${properties.trivechainApi[network]}/rpc/transmit`, {
       method: 'post',
       body: JSON.stringify({ txHex }),
       headers: { 'Content-Type': 'application/json' }

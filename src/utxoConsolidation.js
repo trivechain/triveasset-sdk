@@ -50,7 +50,7 @@ const utxoConsolidation = async (args) => {
 
     while (loopApi) {
       let utxos = null;
-      await getAddressesUtxo(params.from, utxoLimit, skip, params.assetId)
+      await getAddressesUtxo(params.network, params.from, utxoLimit, skip, params.assetId)
         .then(res => { utxos = res; })
         .catch(err => { throw new Error(err); });
 
@@ -135,7 +135,7 @@ const utxoConsolidation = async (args) => {
         }
 
         let transmitResp = null;
-        await transmit(signedTxHex)
+        await transmit(params.network, signedTxHex)
           .then(res => { transmitResp = res; })
           .catch(err => { transmitResp = err; });
 
