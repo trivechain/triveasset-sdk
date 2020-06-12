@@ -29,7 +29,7 @@ exports.utxoConsolidationSchema = Joi.object({
   coloredChangeAddress: Joi.string().pattern(/^[T8ts][1-9A-HJ-NP-Za-km-z]{33}$/).required(),
   metadata: Joi.object().optional(),
   transmit: Joi.bool().default(true).optional(),
-  network: Joi.string().lowercase().valid('mainnet', 'testnet').required()
+  network: Joi.string().lowercase().valid('mainnet', 'testnet', 'livenet').default('mainnet').optional()
 });
 
 exports.mnemonicSchema = Joi.object({
@@ -42,5 +42,5 @@ exports.mnemonicSchema = Joi.object({
     .integer()
     .min(0)
     .max(10000000).required(),
-  network: Joi.string().lowercase().valid('mainnet', 'testnet').required()
+  network: Joi.string().lowercase().valid('mainnet', 'testnet', 'livenet').default('mainnet').optional()
 });
