@@ -15,7 +15,7 @@ exports.sendBuildAssetTXSchema = Joi.object({
   coloredChangeAddress: Joi.string().pattern(/^[T8ts][1-9A-HJ-NP-Za-km-z]{33}$/),
   metadata: Joi.object().optional(),
   transmit: Joi.bool().default(true).optional(),
-  network: Joi.string().lowercase().valid('mainnet', 'testnet').default('mainnet').optional()
+  network: Joi.string().lowercase().valid('mainnet', 'testnet', 'livenet').default('mainnet').optional()
 })
   .xor('from', 'utxos')
   .nand('utxos', 'coloredChangeAddress')
