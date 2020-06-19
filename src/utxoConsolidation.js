@@ -157,14 +157,15 @@ const utxoConsolidation = async (args) => {
     }
 
     if (signedTxHexArray.length) {
-      console.log(signedTxHexArray.length);
       return { signedTxHex: signedTxHexArray };
     }
 
-    console.log(unsignedTxHexArray.length);
-    return { unsignedTxHex: unsignedTxHexArray };
+    if (unsignedTxHexArray.length) {
+      return { unsignedTxHex: unsignedTxHexArray };
+    }
+    
+    throw new Error('Not enough utxo to perform consolidation')
   } catch (err) {
-    console.log('--CATCH--');
     console.error(err);
     return err;
   }
