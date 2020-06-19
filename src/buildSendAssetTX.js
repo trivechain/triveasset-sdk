@@ -101,7 +101,7 @@ const buildSendAssetTX = async (args) => {
 
     for (const priv of params.privateKey) {
       const privateKey = new Bitcoinjs.ECPair.fromWIF(priv, txb.network);
-      for (var i = 0; i < txb.tx.ins.length; i++) {
+      for (let i = 0; i < txb.tx.ins.length; i++) {
         if (txb.inputs[i].prevOutType == 'pubkeyhash') {
           if (new Trivechaincore.Script.fromAddress(privateKey.getAddress()).toHex() == Buffer.from(txb.inputs[i].prevOutScript).toString('hex')) {
             txb.inputs[i].scriptType = null;
