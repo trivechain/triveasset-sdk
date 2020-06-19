@@ -80,7 +80,7 @@ const utxoConsolidation = async (args) => {
             }
             // console.log(i, utxoToSend.length, !loopApi)
             // if number of utxos reach maximum || this is the last utxo ever from the address and has more than 50 utxo
-            if (utxoToSend.length >= 5 || (i === 0 && utxoToSend.length >= 3 && !loopApi)) build = true;
+            if (utxoToSend.length >= 300 || (i === 0 && utxoToSend.length >= 100 && !loopApi)) build = true;
 
             if (!build) continue;
 
