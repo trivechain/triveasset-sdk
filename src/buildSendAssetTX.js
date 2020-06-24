@@ -120,6 +120,12 @@ const buildSendAssetTX = async (args) => {
       }
     }
 
+    for (let j = 0; j < txb.tx.ins.length; j++) {
+      if (!txb.inputs[j].redeemScript) {
+        throw new Error(`Input not signed: ${txb.tx.ins[j].hash.reverse().toString('hex')}:${txb.tx.ins[j].index}`)
+      }
+    }
+
     const tx = txb.build();
     const signedTxHex = tx.toHex();
     // return signed tx hex
