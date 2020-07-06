@@ -116,11 +116,11 @@ const DEPRECATED_getAddress = async (args) => {
         let master = await Bitcoinjs.HDNode.fromSeedHex(privateSeed, params.network === "mainnet" ? DEPRECATED_mainnet : DEPRECATED_testnet)
         master = master.deriveHardened(44)
         // coin_type'
-        master = master.deriveHardened(0)
+        master = master.deriveHardened(params.mnemonicCoinType)
         // account'
         master = master.deriveHardened(params.mnemonicAccount)
         // no change
-        master = master.derive(0)
+        master = master.derive(params.mnemonicChange)
         // address_index
         master = master.derive(params.mnemonicIndex)
 
@@ -139,11 +139,11 @@ const DEPRECATED_getAddressPrivateKey = async (args) => {
         let master = await Bitcoinjs.HDNode.fromSeedHex(privateSeed, params.network === "mainnet" ? DEPRECATED_mainnet : DEPRECATED_testnet)
         master = master.deriveHardened(44)
         // coin_type'
-        master = master.deriveHardened(0)
+        master = master.deriveHardened(params.mnemonicCoinType)
         // account'
         master = master.deriveHardened(params.mnemonicAccount)
         // no change
-        master = master.derive(0)
+        master = master.derive(params.mnemonicChange)
         // address_index
         master = master.derive(params.mnemonicIndex)
 

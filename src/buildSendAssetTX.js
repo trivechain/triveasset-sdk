@@ -119,10 +119,10 @@ const buildSendAssetTX = async (args) => {
         }
       }
     }
-
+    
     for (let j = 0; j < txb.tx.ins.length; j++) {
-      if (!txb.inputs[j].redeemScript) {
-        throw new Error(`Input not signed: ${txb.tx.ins[j].hash.reverse().toString('hex')}:${txb.tx.ins[j].index}`)
+      if (!txb.inputs[j].redeemScript && !txb.inputs[j].signatures) {
+        throw new Error(`${j} Input not signed: ${txb.tx.ins[j].hash.reverse().toString('hex')}:${txb.tx.ins[j].index}`)
       }
     }
 

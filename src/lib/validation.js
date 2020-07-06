@@ -55,10 +55,20 @@ exports.utxoConsolidationSchema = Joi.object({
 
 exports.mnemonicSchema = Joi.object({
   mnemonicStr: Joi.string().pattern(/^([a-zA-Z0-9]* ){11}[a-zA-Z0-9]*$/).required(),
+  mnemonicCoinType: Joi.number()
+  .integer()
+  .min(0)
+  .max(10000000)
+  .default(0).optional(),
   mnemonicAccount: Joi.number()
     .integer()
     .min(0)
     .max(1000000).required(),
+  mnemonicChange: Joi.number()
+  .integer()
+  .min(0)
+  .max(10000000)
+  .default(0).optional(),
   mnemonicIndex: Joi.number()
     .integer()
     .min(0)
