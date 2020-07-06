@@ -21,6 +21,27 @@ exports.sendBuildAssetTXSchema = Joi.object({
   .nand('utxos', 'coloredChangeAddress')
   .and('from', 'coloredChangeAddress');
 
+exports.buildIssueAssetTXSchema = Joi.object({
+  utxos: Joi.array().items(Joi.object().required()),
+  amount: Joi.number().required().integer().min(1).max(9007199254740991),
+  divisibility: Joi.number().required().integer().min(0).max(15),
+  lockStatus: Joi.bool().required(),
+  fee: Joi.number().integer().optional(),
+  metadata: Joi.object({
+    assetName: Joi.string().required(),
+    assetSymbol: Joi.string().required(),
+    issuer: Joi.string().optional(),
+    description: Joi.string().optional(),
+    userData: Joi.object().optional(),
+    urls: Joi.array().optional(),
+  }).required(),
+  issueAddress: Joi.string().pattern(/^[T8ts][1-9A-HJ-NP-Za-km-z]{33}$/).required(),
+  financeChangeAddress: Joi.string().pattern(/^[T8ts][1-9A-HJ-NP-Za-km-z]{33}$/).required(),
+  privateKey: Joi.array().items(Joi.string().length(52).required()).optional(),
+  transmit: Joi.bool().default(true).optional(),
+  network: Joi.string().lowercase().valid('mainnet', 'testnet', 'livenet').default('mainnet').optional()
+})
+
 exports.utxoConsolidationSchema = Joi.object({
   from: Joi.array().items(Joi.string().pattern(/^[T8ts][1-9A-HJ-NP-Za-km-z]{33}$/).required()).required(),
   assetId: Joi.string().pattern(/^[LU][1-9A-HJ-NP-Za-km-z]{37}$/).required(),
