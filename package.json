@@ -24,7 +24,7 @@
     "@trivechain/trivechaincore-lib": "git+https://github.com/trivechain/trivechaincore-lib.git",
     "bip39": "^3.0.2",
     "bitcoinjs-lib": "2.3.0",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^3.1.1",
     "node-rest-client": "^3.1.0"
   },
   "devDependencies": {
